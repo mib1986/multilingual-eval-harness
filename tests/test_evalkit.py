@@ -1,12 +1,13 @@
 """Tests for evalkit. Run with: python -m unittest discover -s tests -v"""
 
+import copy
 import pathlib
 import sys
 import unittest
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 
-from evalkit import agreement, analyze, report, rubric  # noqa: E402
+from evalkit import agreement, analyze, htmlreport, report, rubric  # noqa: E402
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 
@@ -123,6 +124,45 @@ class TestAnalyze(unittest.TestCase):
         self.assertIn("# 评测一致性报告", text)
         self.assertIn("## 四、待仲裁清单", text)
         self.assertGreater(len(text), 800)
+
+
+class TestHtmlReport(unittest.TestCase):
+    def setUp(self):
+        self.spec = rubric.load_rubric(str(ROOT / "rubric.json"))
+        self.records = analyze.load_annotations(str(ROOT / "data" / "sample_annotations.jsonl"))
+        self.result = analyze.compute(self.records, self.spec)
+
+    def test_html_is_one_self_contained_file(self):
+        page = htmlreport.to_html(self.result, source="data/sample_annotations.jsonl")
+        self.assertTrue(page.startswith("<!DOCTYPE html>"))
+        self.assertIn("评测一致性报告", page)
+        # No scripts and no external URLs: the file has to open offline.
+        self.assertNotIn("<script", page)
+        self.assertNotIn('src="http', page)
+        self.assertNotIn('href="http', page)
+
+    def test_html_carries_the_numbers(self):
+        page = htmlreport.to_html(self.result)
+        for token in ("62.5%", "92.5%", "0.530", "zh-03", "待仲裁"):
+            self.assertIn(token, page)
+
+    def test_html_verdict_follows_the_accept_line(self):
+        page = htmlreport.to_html(self.result)
+        # 92.5% adjacent agreement clears the 90% line, so the batch is usable.
+        self.assertIn("可用", page)
+        weak = copy.deepcopy(self.result)
+        weak["overall"]["exact_rate"] = 0.4
+        weak["overall"]["adjacent_rate"] = 0.6
+        weak["disagreements"] = []
+        weak_page = htmlreport.to_html(weak)
+        self.assertIn("不可用", weak_page)
+
+    def test_html_escapes_untrusted_excerpts(self):
+        result = copy.deepcopy(self.result)
+        result["disagreements"][0]["excerpt"] = "<script>alert(1)</script>"
+        page = htmlreport.to_html(result)
+        self.assertIn("&lt;script&gt;alert(1)&lt;/script&gt;", page)
+        self.assertNotIn("<script>alert(1)", page)
 
 
 if __name__ == "__main__":

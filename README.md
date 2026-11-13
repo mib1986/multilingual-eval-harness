@@ -38,6 +38,26 @@ arbitration queue: 3
 python cli.py validate --rubric rubric.json
 ```
 
+## 发给客户的那一页
+
+Markdown 是给自己看的，客户不读表格。加一个参数就能生成一份**单文件 HTML**：内联样式、无脚本、无外部字体和 CDN，断网、从 U 盘打开、当邮件附件发给人都能正常显示，也能直接打印成 PDF。
+
+```bash
+python cli.py report --rubric rubric.json --annotations data/sample_annotations.jsonl \
+  --html-out examples/qc-report.html
+```
+
+页面顶部先给结论（可用 / 需复训 / 不可用，以及为什么），然后是一条 0–100 的一致性刻度尺：完全一致率与相邻一致率各占一点，红色虚线是 90% 验收线，一眼能看出这批数据离可用还有多远。下面依次是分维度条形、标注员偏差、按极差排序的仲裁清单（附条目原文），最后是基于本次数字给出的动作建议。
+
+两个参数可以同时用，一次出两份：
+
+```bash
+python cli.py report --rubric rubric.json --annotations data/sample_annotations.jsonl \
+  --out examples/report.md --html-out examples/qc-report.html
+```
+
+`--html-out` 生成的文件里带着条目原文，转发前确认接收方权限。
+
 ## 报告包含什么
 
 | 部分 | 回答的问题 |
@@ -47,6 +67,8 @@ python cli.py validate --rubric rubric.json
 | 标注员偏差 | 谁偏松、谁偏严，偏了多少，是否需要单独复训 |
 | 待仲裁清单 | 哪几条不要再投票，直接进仲裁，按严重度排好 |
 | 判读与建议 | 基于本次数字给出的下一步动作，不是通用建议 |
+
+Markdown 与 HTML 两份报告内容同源，HTML 多一层判断：开头一句话告诉你这批数据**能不能用**，以及不能用时该先改什么。
 
 ## 指标定义与局限
 
@@ -104,7 +126,7 @@ python cli.py report --rubric rubric.json --annotations data/sample_annotations.
 - 只处理评分，不处理文本质量本身。标准写错了，一致性再高也只是稳定地错。
 - 条目数少于 20 时，κ 的估计不稳定，建议先只看完全一致率与偏差。
 - 仲裁队列按极差排序，不判断谁对。仲裁仍然需要人。
-- 目前输出 Markdown，没有 HTML 报告与趋势追踪。
+- 没有趋势追踪：两次运行之间的一致性变化，需要自己对比两份报告。
 
 ## 结构
 
@@ -113,11 +135,12 @@ evalkit/
   agreement.py   一致性指标（含推广到不等标注员数的 Fleiss κ）
   analyze.py     汇总计算与仲裁队列
   report.py      Markdown 报告渲染
+  htmlreport.py  单文件 HTML 报告渲染（无脚本、无外部依赖）
   rubric.py      标准加载与结构校验
 rubric.json      示例标准：四维、权重 0.35/0.30/0.20/0.15
 data/            10 条三语示例（中文 4、英文 3、马来文 3）× 3 位标注员
-examples/        由示例数据生成的报告
-tests/           20 项单元测试，含手算校验的 κ 用例
+examples/        示例数据生成的 Markdown 报告（HTML 用 --html-out 生成）
+tests/           24 项单元测试，含手算校验的 κ 用例
 ```
 
 ```bash
