@@ -17,6 +17,7 @@ jobs:
   tests:
     name: tests · Python ${{ matrix.python-version }}
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     strategy:
       fail-fast: false
       matrix:
@@ -42,6 +43,7 @@ jobs:
   tests-legacy:
     name: tests · Python 3.8
     runs-on: ubuntu-22.04
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
