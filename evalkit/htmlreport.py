@@ -313,7 +313,7 @@ def _queue_table(result: Dict[str, Any], top: int) -> str:
             f'<td class="n">{index}</td>'
             f'<td class="dim">{_esc(row["item_id"])}</td>'
             f'<td class="pill">{_esc(row["lang"] or "—")}</td>'
-            f'<td>{_esc(dim_labels.get(row["dimension"], row["dimension"))}</td>'
+            f'<td>{_esc(dim_labels.get(row["dimension"], row["dimension"]))}</td>'
             f'<td class="mono" style="font-size:12.5px">{_esc(scores)}</td>'
             f'<td class="n">{row["spread"]}</td>'
             f'<td>{_badge(reason, "b-red")}</td>'
