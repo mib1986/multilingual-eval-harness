@@ -5,7 +5,7 @@ from __future__ import annotations
 import argparse
 import sys
 
-from evalkit import analyze, report, rubric
+from evalkit import analyze, htmlreport, report, rubric
 
 
 def _pct(value) -> str:
@@ -27,6 +27,11 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--rubric", required=True, help="path to rubric.json")
     run.add_argument("--annotations", required=True, help="path to annotations.jsonl")
     run.add_argument("--out", default=None, help="write the Markdown report to this path")
+    run.add_argument(
+        "--html-out",
+        default=None,
+        help="write a standalone HTML report to this path (one file, no external assets)",
+    )
     run.add_argument("--spread", type=int, default=None, help="override the spread threshold")
     run.add_argument("--mad", type=float, default=None, help="override the mean-deviation threshold")
     run.add_argument("--top", type=int, default=10, help="how many arbitration rows to list")
@@ -61,6 +66,12 @@ def main(argv=None) -> int:
             handle.write(markdown + "\n")
         print(f"report written to {args.out}")
 
+    if args.html_out:
+        page = htmlreport.to_html(result, source=args.annotations, top=args.top)
+        with open(args.html_out, "w", encoding="utf-8", newline="\n") as handle:
+            handle.write(page)
+        print(f"html report written to {args.html_out}")
+
     overall = result["overall"]
     print(
         "items={n_items} raters={n_raters} exact={exact} adjacent={adj} kappa={kappa}".format(
@@ -72,7 +83,7 @@ def main(argv=None) -> int:
         )
     )
     print(f"arbitration queue: {len(result['disagreements'])}")
-    if not args.out:
+    if not args.out and not args.html_out:
         print()
         print(markdown)
     return 0
