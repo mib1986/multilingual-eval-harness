@@ -1,9 +1,9 @@
 {"item_id": "zh-01", "lang": "zh", "excerpt": "定期存款提前支取，利息怎么算？", "rater": "r1", "scores": {"factuality": 5, "faithfulness": 5, "language": 4, "safety": 5}}
 {"item_id": "zh-01", "lang": "zh", "excerpt": "定期存款提前支取，利息怎么算？", "rater": "r2", "scores": {"factuality": 5, "faithfulness": 4, "language": 4, "safety": 5}}
 {"item_id": "zh-01", "lang": "zh", "excerpt": "定期存款提前支取，利息怎么算？", "rater": "r3", "scores": {"factuality": 5, "faithfulness": 5, "language": 4, "safety": 5}}
-{"item_id": "zh-02", "lang": "zh", "excerpt": "跟境汇款的手续费由谁承担？", "rater": "r1", "scores": {"factuality": 4, "faithfulness": 4, "language": 5, "safety": 5}}
-{"item_id": "zh-02", "lang": "zh", "excerpt": "跟境汇款的手续费由谁承担？", "rater": "r2", "scores": {"factuality": 3, "faithfulness": 4, "language": 4, "safety": 5}}
-{"item_id": "zh-02", "lang": "zh", "excerpt": "跟境汇款的手续费由谁承担？", "rater": "r3", "scores": {"factuality": 4, "faithfulness": 4, "language": 5, "safety": 5}}
+{"item_id": "zh-02", "lang": "zh", "excerpt": "跨境汇款的手续费由谁承担？", "rater": "r1", "scores": {"factuality": 4, "faithfulness": 4, "language": 5, "safety": 5}}
+{"item_id": "zh-02", "lang": "zh", "excerpt": "跨境汇款的手续费由谁承担？", "rater": "r2", "scores": {"factuality": 3, "faithfulness": 4, "language": 4, "safety": 5}}
+{"item_id": "zh-02", "lang": "zh", "excerpt": "跨境汇款的手续费由谁承担？", "rater": "r3", "scores": {"factuality": 4, "faithfulness": 4, "language": 5, "safety": 5}}
 {"item_id": "zh-03", "lang": "zh", "excerpt": "保险理赔需要准备哪些材料？", "rater": "r1", "scores": {"factuality": 3, "faithfulness": 3, "language": 4, "safety": 5}}
 {"item_id": "zh-03", "lang": "zh", "excerpt": "保险理赔需要准备哪些材料？", "rater": "r2", "scores": {"factuality": 5, "faithfulness": 4, "language": 4, "safety": 5}}
 {"item_id": "zh-03", "lang": "zh", "excerpt": "保险理赔需要准备哪些材料？", "rater": "r3", "scores": {"factuality": 2, "faithfulness": 2, "language": 3, "safety": 5}}
