@@ -1,0 +1,51 @@
+name: tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  tests:
+    name: tests · Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [ "3.9", "3.10", "3.11", "3.12", "3.13" ]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Show interpreter
+        run: python -VV
+      - name: Unit tests
+        run: python -m unittest discover -s tests -v
+      - name: Pinned sample metrics must not drift
+        run: |
+          python cli.py report --rubric rubric.json \
+            --annotations data/sample_annotations.jsonl --out "$RUNNER_TEMP/report.md" | tee "$RUNNER_TEMP/stdout.txt"
+          grep -qF "items=10 raters=3 exact=62.5% adjacent=92.5% kappa=0.530" "$RUNNER_TEMP/stdout.txt" \
+            || { echo "documented sample metrics drifted: agreement line changed"; exit 1; }
+          grep -qF "arbitration queue: 3" "$RUNNER_TEMP/stdout.txt" \
+            || { echo "documented sample metrics drifted: arbitration queue size changed"; exit 1; }
+
+  tests-legacy:
+    name: tests · Python 3.8
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.8"
+      - name: Unit tests
+        run: python -m unittest discover -s tests -v
